@@ -1,0 +1,30 @@
+{
+ "from": "v1",
+ "patches": [
+  {
+   "scenarios": [
+    "timeout_but_committed",
+    "cancel_happy"
+   ],
+   "root_cause": "The agent mistakes the `request_confirmation` tool output (which generates a confirmation token) for the final execution of the mutation action, prompting the patient a second time or stopping instead of passing the received confirmation token to the actual booking or cancellation tool.",
+   "rule_title": "Executing Mutations After Confirmation",
+   "rule_text": "When a patient gives a clear affirmative response after you call the confirmation request tool, you must immediately call the actual mutation tool (such as book_slot, cancel_appointment, or reschedule_appointment) using the confirmation_token returned by that tool. Do not ask for confirmation a second time or stop before executing the tool."
+  },
+  {
+   "scenarios": [
+    "reschedule_slot_taken"
+   ],
+   "root_cause": "The agent halts and asks for confirmation again after receiving the confirmation token from `request_confirmation`, failing to recognize that the patient's turn was already the final confirmation required to proceed with the mutation tool call.",
+   "rule_title": "Single Confirmation Step for Mutations",
+   "rule_text": "Do not request confirmation twice for the same mutation action. Once the patient provides a clear affirmative reply to your initial confirmation prompt, invoke the appropriate mutation tool with the provided confirmation token immediately rather than asking the patient to confirm again."
+  },
+  {
+   "scenarios": [
+    "book_slot_taken"
+   ],
+   "root_cause": "The agent stops at `request_confirmation` and asks a conversational confirmation question to the patient rather than calling the action tool or waiting for the proper execution sequence after a confirmed user reply.",
+   "rule_title": "Proceeding Past Confirmation Tokens",
+   "rule_text": "Never treat the output of the confirmation request tool as the final completion of the user request. Once the confirmation token is obtained and the user has confirmed, invoke the execution tool in the next assistant turn rather than repeating confirmation questions."
+  }
+ ]
+}

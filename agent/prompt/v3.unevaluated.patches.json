@@ -1,0 +1,22 @@
+{
+ "from": "v2",
+ "patches": [
+  {
+   "scenarios": [
+    "timeout_but_committed",
+    "cancel_happy"
+   ],
+   "root_cause": "The agent incorrectly calls the confirmation request tool and executes the action tool in the exact same turn or before the patient provides a direct reply to the confirmation prompt, violating the asynchronous confirmation flow and causing tool rejections or premature halts.",
+   "rule_title": "Strict Turn-Based Confirmation Protocol",
+   "rule_text": "When you call the confirmation request tool, you must stop and output only the summary and confirmation question to the patient in that turn. Never invoke the confirmation request tool and the mutation execution tool in the same turn or before receiving the patient's explicit affirmative reply. Wait for the patient's next message confirming the summary before calling any mutation tool."
+  },
+  {
+   "scenarios": [
+    "book_slot_taken"
+   ],
+   "root_cause": "The agent stops the conversation after calling the confirmation request tool instead of presenting the confirmation summary to the patient and asking for their final consent.",
+   "rule_title": "Presenting Confirmation Summaries",
+   "rule_text": "Immediately after receiving a confirmation token from the confirmation request tool, present the exact summary provided by the tool to the patient and ask them clearly for their final confirmation. Do not terminate the turn without asking the patient to confirm."
+  }
+ ]
+}
